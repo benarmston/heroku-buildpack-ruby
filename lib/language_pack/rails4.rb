@@ -16,50 +16,51 @@ class LanguagePack::Rails4 < LanguagePack::Rails3
     "Ruby/Rails"
   end
 
-  def default_process_types
-    web_process = gem_is_bundled?("thin") ?
-      "bin/rails server thin -p $PORT -e $RAILS_ENV" :
-      "bin/rails server -p $PORT -e $RAILS_ENV"
-    super.merge({
-      "web"     => web_process,
-      "console" => "bin/rails console"
-    })
-  end
+  # def default_process_types
+  #   web_process = gem_is_bundled?("thin") ?
+  #     "bin/rails server thin -p $PORT -e $RAILS_ENV" :
+  #     "bin/rails server -p $PORT -e $RAILS_ENV"
+  #   super.merge({
+  #     "web"     => web_process,
+  #     "console" => "bin/rails console"
+  #   })
+  # end
 
   private
-  def plugins
-    []
-  end
+  # def plugins
+  #   []
+  # end
 
-  def run_assets_precompile_rake_task
-    log("assets_precompile") do
-      setup_database_url_env
+  # def run_assets_precompile_rake_task
+  #   super
+  #   # log("assets_precompile") do
+  #   #   setup_database_url_env
 
-      if rake_task_defined?("assets:precompile")
-        topic("Preparing app for Rails asset pipeline")
-        if Dir.glob('public/assets/manifest-*.json').any?
-          puts "Detected manifest file, assuming assets were compiled locally"
-        else
-          ENV["RAILS_GROUPS"] ||= "assets"
-          ENV["RAILS_ENV"]    ||= "production"
+  #   #   if rake_task_defined?("assets:precompile")
+  #   #     topic("Preparing app for Rails asset pipeline")
+  #   #     if Dir.glob('public/assets/manifest-*.json').any?
+  #   #       puts "Detected manifest file, assuming assets were compiled locally"
+  #   #     else
+  #   #       ENV["RAILS_GROUPS"] ||= "assets"
+  #   #       ENV["RAILS_ENV"]    ||= "production"
 
-          puts "Running: rake assets:precompile"
-          require 'benchmark'
-          time = Benchmark.realtime { pipe("env PATH=$PATH:bin bundle exec rake assets:precompile 2>&1") }
+  #   #       puts "Running: rake assets:precompile"
+  #   #       require 'benchmark'
+  #   #       time = Benchmark.realtime { pipe("env PATH=$PATH:bin bundle exec rake assets:precompile 2>&1") }
 
-          if $?.success?
-            log "assets_precompile", :status => "success"
-            puts "Asset precompilation completed (#{"%.2f" % time}s)"
-          else
-            log "assets_precompile", :status => "failure"
-            error "Precompiling assets failed."
-          end
-        end
-      else
-        puts "Error detecting the assets:precompile task"
-      end
-    end
-  end
+  #   #       if $?.success?
+  #   #         log "assets_precompile", :status => "success"
+  #   #         puts "Asset precompilation completed (#{"%.2f" % time}s)"
+  #   #       else
+  #   #         log "assets_precompile", :status => "failure"
+  #   #         error "Precompiling assets failed."
+  #   #       end
+  #   #     end
+  #   #   else
+  #   #     puts "Error detecting the assets:precompile task"
+  #   #   end
+  #   # end
+  # end
 
   def create_database_yml
   end
